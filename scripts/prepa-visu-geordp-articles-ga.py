@@ -21,6 +21,9 @@ geordp_retweets = geordp.groupby(['geordp_date']).sum().reset_index()
 geordp_retweets['geordp_date'] = pd.to_datetime(geordp_retweets['geordp_date'])
 geordp_retweets['Week_Number'] = geordp_retweets['geordp_date'].dt.isocalendar().week
 
+# Crée une date de fin de chaque quinzaine
+geordp_retweets['date_fin'] = geordp_retweets['geordp_date'] + pd.DateOffset(13)
+
 # Lit les statistiques utilisateurs de Google Analytics de GeoTribu
 users = pd.read_csv("ga_users.csv").rename(columns={"Index des jours": "date", "Utilisateurs": "nb_users"})
 
@@ -145,7 +148,7 @@ geotribu_all_tweets = pd.merge(geordp_retweets, merged, on=['geordp_date'], how=
 
 # Remplit la colonnes de likes et retweets totaux par des 0 lorsqu'il n'y a pas de stats
 geotribu_all_tweets['all_likes'] = geotribu_all_tweets['all_likes'].fillna(geotribu_all_tweets['likes_count'])
-geotribu_all_tweets['all_rt'] = geotribu_all_tweets['all_rt'].fillna(geotribu_all_tweets['retweets_count'])
+geotribu_all_tweets['all_rt'] = geotribu_all_tweets['all_rt'].fillna(geotribu_all_tweets['retweets_count']).astype(int)
 
 # Conserve uniquement les colonnes intéressantes
 geotribu_all_tweets = geotribu_all_tweets[['geordp_date', 'all_likes','all_rt','Week_Number','Year_Number']]
@@ -166,8 +169,9 @@ fig.add_trace(go.Scatter(x=geotribu_all_tweets['geordp_date'],
                          y=geotribu_all_tweets['all_likes'],
                          mode='lines+markers',
                          name='Likes',
-                         text = geotribu_all_tweets['all_likes'].astype(str)+' likes',
-                         hoverinfo='x+text'))
+                         hovertemplate =
+                            'Du ' + geordp_retweets['geordp_date'].astype(str) + ' au ' + geordp_retweets['date_fin'].astype(str) +
+                            '<br><b> %{y} Likes</b><br>'))
 
 fig.add_trace(go.Scatter(x=geotribu_all_tweets['geordp_date'],
                          y=geotribu_all_tweets['all_rt'],
@@ -183,7 +187,7 @@ fig.add_trace(go.Scatter(x=users_geordp_two_w['date'],
                          yaxis="y2",
                          line = dict(color='#75ca9b'),
                          text = users_geordp_two_w['two_weeks'].astype(str)+' utilisateurs',
-                         hoverinfo='x+text'))
+                         hoverinfo='text'))
 
 # Liste les dates de publications des GeoRDP
 geordp_publi = ['2020-12-24', '2020-12-11', '2020-11-27', '2020-11-13', '2020-10-30', '2020-10-16', '2020-10-02', '2020-09-18',
