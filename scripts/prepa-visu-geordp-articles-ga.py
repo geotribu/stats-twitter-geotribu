@@ -168,7 +168,7 @@ fig = go.Figure(layout=layout)
 fig.add_trace(go.Scatter(x=geotribu_all_tweets['geordp_date'],
                          y=geotribu_all_tweets['all_likes'],
                          mode='lines+markers',
-                         name='Likes',
+                         name='',
                          hovertemplate =
                             'Du ' + geordp_retweets['geordp_date'].astype(str) + ' au ' + geordp_retweets['date_fin'].astype(str) +
                             '<br><b> %{y} Likes</b><br>'))
